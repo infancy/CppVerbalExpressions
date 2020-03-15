@@ -47,20 +47,24 @@ namespace verex
 
 class verex
 {
-using flag_type = veregex::regex::flag_type;
+// namespace veregex = std;
+using flag_type = veregex::regex::flag_type; // regex_constants::syntax_option_type::ECMAScript
 
 private:
-    std::string prefixes;
+    std::string prefixes; // "^"
     std::string source;
-    std::string suffixes;
-    std::string pattern;
+    std::string suffixes; // "$"
+
+    std::string pattern; // 要匹配的模式
+
+    // Flags flags;
     unsigned int modifiers;
 
 
     enum Flags {
         GLOBAL          = 1
       , MULTILINE       = 2
-      , CASEINSENSITIVE = 4
+      , CASEINSENSITIVE = 4 // 大小写不敏感
     };
 
     friend std::ostream& operator<<(std::ostream &strm, verex &v)
@@ -95,6 +99,7 @@ public:
     verex& operator=(const verex& ve) = default;
     ~verex() = default;
 
+
     verex & add(const std::string & value)
     {
         source = source + value;
@@ -102,12 +107,12 @@ public:
         return (*this);
     }
 
+
     verex & start_of_line(const bool enable)
     {
         prefixes = enable ? "^" : "";
         return add("");
     }
-
     verex & start_of_line()
     {
         return start_of_line(true);
@@ -118,15 +123,15 @@ public:
         suffixes = enable ? "$" : "";
         return add("");
     }
-
     verex & end_of_line()
     {
         return end_of_line(true);
     }
 
+
     verex & then(const std::string & value)
     {
-        return add("(?:" + value + ")");
+        return add(   "(?:" + value + ")"   );
     }
 
     verex & find(const std::string & value)
@@ -136,14 +141,14 @@ public:
 
     verex & maybe(const std::string & value)
     {
-        return add("(?:" + value + ")?");
+        return add(   "(?:" + value + ")?"   );
     }
+
 
     verex & anything()
     {
         return add("(?:.*)");
     }
-
     verex & anything_but(const std::string & value)
     {
         return add("(?:[^" + value + "]*)");
@@ -153,11 +158,11 @@ public:
     {
         return add("(?:.+)");
     }
-
     verex & something_but(const std::string & value)
     {
         return add("(?:[^" + value + "]+)");
     }
+
 
     std::string replace(const std::string & source, const std::string & value)
     {
@@ -168,36 +173,38 @@ public:
         );
     }
 
+
     verex & linebreak()
     {
         return add("(?:(?:\\n)|(?:\\r\\n))");
     }
-
     verex & br()
     {
         return linebreak();
     }
-
     verex & tab()
     {
         return add("\\t");
     }
+
 
     verex & word()
     {
         return add("\\w+");
     }
 
+
     verex & any_of(const std::string & value)
     {
         return add( "[" + value + "]" );
     }
-
     verex & any(const std::string & value)
     {
         return any_of(value);
     }
 
+
+    // const vector<pair<string, string>>& args
     verex & range(const std::vector<std::pair<std::string, std::string>> & args)
     {
         std::stringstream value;
@@ -214,11 +221,11 @@ public:
 
         return add(value.str());
     }
-
     verex & range(const std::string & a, const std::string & b)
     {
         return range({{a, b}});
     }
+
 
     verex & add_modifier(const char modifier)
     {
@@ -238,7 +245,6 @@ public:
 
         return (*this);
     }
-
     verex & remove_modifier(const char modifier)
     {
         switch (modifier) {
@@ -269,11 +275,11 @@ public:
 
         return (*this);
     }
-
     verex & with_any_case()
     {
         return with_any_case(true);
     }
+
 
     verex & search_one_line(const bool enable)
     {
@@ -285,11 +291,11 @@ public:
 
         return (*this);
     }
-
     verex & search_one_line()
     {
         return search_one_line(true);
     }
+
 
     verex & search_global(const bool enable)
     {
@@ -301,11 +307,11 @@ public:
 
         return (*this);
     }
-
     verex & search_global()
     {
         return search_global(true);
     }
+
 
     verex & multiple(const std::string & value)
     {
@@ -316,6 +322,7 @@ public:
         return add(value);
     }
 
+    // or???
     verex & alt(const std::string & value)
     {
         if (prefixes.find("(") == std::string::npos) {
